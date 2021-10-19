@@ -25,8 +25,8 @@ class SeparationPlot:
         y_true: np.ndarray,
         y_pred: np.ndarray,
         title: str = "",
-        figsize: Tuple[float] = (9, 1.5),
-        colors: Tuple[str] = ("#FEF0D9", "#E34A33"),
+        figsize: Tuple[float, float] = (9, 1.5),
+        colors: Tuple[str, str] = ("#FEF0D9", "#E34A33"),
         path: Optional[str] = None,
     ):
         self.y_true = y_true

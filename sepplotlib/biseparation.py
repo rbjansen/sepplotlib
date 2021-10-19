@@ -48,7 +48,7 @@ class BiseparationPlot:
         markersize: int = 400,
         margin: float = 0.1,
         pad: float = 0.1,
-        colors: Tuple[str] = ("blue", "red"),
+        colors: Tuple[str, str] = ("blue", "red"),
         bg_alpha: float = 0.2,
         fg_alpha: float = 0.9,
         con_alpha: float = 0.2,
