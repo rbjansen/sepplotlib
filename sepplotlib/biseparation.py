@@ -1,4 +1,4 @@
-"""Biseparation plot."""
+"""Bi-separation plot."""
 
 from typing import Optional, Tuple
 import matplotlib.pyplot as plt
