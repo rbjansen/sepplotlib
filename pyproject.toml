@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "sepplotlib"
+version = "0.1.0"
+description = "Separation plots for classification problems"
+authors = ["Remco Bastiaan Jansen <r.b.jansen.uu@gmail.com>"]
+readme = "README.md"
+license = "MIT"
+include = [
+    "LICENSE",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+matplotlib = "^3.4.3"
+pandas = "^1.3.4"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
