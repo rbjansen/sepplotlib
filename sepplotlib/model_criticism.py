@@ -186,9 +186,9 @@ class ModelCriticismPlot:
     def rug(self):
         """Add rug to figure."""
         self.rax_y = self.axs[0].inset_axes(
-            bounds=[0.97, 0, 0.03, 1], zorder=0
+            bounds=[0.96, 0, 0.045, 1], zorder=4
         )
-        for color, value in zip(self.color_array, self.y_pred):
+        for color, value in zip(self.color_array, self.sorted_index):
             self.rax_y.hlines(
                 y=value, xmin=0, xmax=1, color=color, alpha=0.5, lw=3
             )
