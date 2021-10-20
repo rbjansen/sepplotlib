@@ -1,6 +1,6 @@
 """Model criticism plot."""
 
-from typing import Tuple
+from typing import Tuple, Optional
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -48,13 +48,12 @@ class ModelCriticismPlot:
         figsize: Tuple[int, int] = (5, 7),
         framesize: int = 2,
         n_worst: int = 10,
-        colors: Tuple[str, str] = ("blue", "red"),
         title: str = "",
         titlesize: int = 18,
         xlabel: str = "Predicted probability (p)",
         ylabel: str = "Observation (ordered by p)",
         markersize: int = 50,
-        markeralpha: float = 0.5,
+        markeralpha: float = 1,
         labelsize: int = 16,
         annot_size: int = 12,
         annot_spacing: float = 0.05,
@@ -64,13 +63,14 @@ class ModelCriticismPlot:
         path: Optional[str] = None,
         dpi: Optional[int] = None,
     ):
-        self.y_true = df[y_true]
-        self.y_pred = df[y_pred]
+        self.y_true = df[y_true].to_numpy()
+        self.y_pred = df[y_pred].to_numpy()
         self.lab = df[lab]
         self.figsize = figsize
         self.framesize = framesize
         self.n_worst = n_worst
-        self.colors = colors
+        self.colors = ("#0862ca", "#fd1205")
+        self.linecolors = ("#cddff4", "#fecfdc")
         self.title = title
         self.titlesize = titlesize
         self.xlabel = xlabel
@@ -95,11 +95,11 @@ class ModelCriticismPlot:
         )
         (
             ModelCriticismPlot.setup_axs(self)
+            .find_highlights()
             .prepare_data()
             .scatter()
             .density()
             .rug()
-            .find_highlights()
             .connect_rug()
             .annotate()
         )
@@ -137,14 +137,24 @@ class ModelCriticismPlot:
             self.axs[1].spines[axis].set_linewidth(self.framesize)
         return self
 
+    def find_highlights(self):
+        """Find predictions to highlight."""
+        self.worst_fn = np.where(self.y_true == 1)[0][: self.n_worst]
+        self.worst_fp = np.where(self.y_true == 0)[0][-self.n_worst :]
+        self.worst_fn = -np.sort(-self.worst_fn)
+        self.worst_fp = -np.sort(-self.worst_fp)
+        return self
+
     def prepare_data(self):
         """Prepare sorted data arrays."""
         self.y_pred = np.sort(self.y_pred)
-        color_set = np.array(self.colors)
+        color_set = np.array(self.linecolors)
         self.sorted_index = np.argsort(self.y_pred)  # Used to index actuals.
         self.y_true = self.y_true[self.sorted_index].astype(int)
         self.lab = self.lab[self.sorted_index]
         self.color_array = color_set[self.y_true]
+        self.color_array[self.worst_fp] = self.colors[0]
+        self.color_array[self.worst_fn] = self.colors[1]
         return self
 
     def scatter(self):
@@ -173,14 +183,6 @@ class ModelCriticismPlot:
         )
         return self
 
-    def find_highlights(self):
-        """Find predictions to highlight."""
-        self.worst_fn = np.where(self.y_true == 1)[0][: self.n_worst]
-        self.worst_fp = np.where(self.y_true == 0)[0][-self.n_worst :]
-        self.worst_fn = -np.sort(-self.worst_fn)
-        self.worst_fp = -np.sort(-self.worst_fp)
-        return self
-
     def rug(self):
         """Add rug to figure."""
         self.rax_y = self.axs[0].inset_axes(
@@ -198,13 +200,13 @@ class ModelCriticismPlot:
 
     def connect_rug(self):
         """Connect scatter to rug."""
+        linecolor_array = np.array(self.linecolors)[self.y_true]
         for idx in self.worst_fp:
             self.axs[0].hlines(
                 y=idx,
                 xmin=self.y_pred[idx],
                 xmax=1 + self.pad,
-                color=self.color_array[idx],
-                alpha=0.2,
+                color=linecolor_array[idx],
                 zorder=3,
                 lw=2,
             )
@@ -213,8 +215,7 @@ class ModelCriticismPlot:
                 y=idx,
                 xmin=self.y_pred[idx],
                 xmax=1 + self.pad,
-                color=self.color_array[idx],
-                alpha=0.2,
+                color=linecolor_array[idx],
                 zorder=3,
                 lw=2,
             )
