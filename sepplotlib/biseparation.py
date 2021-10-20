@@ -48,9 +48,10 @@ class BiseparationPlot:
         n_worst: int = 5,
         markersize: int = 400,
         margin: float = 0.1,
-        pad: float = 0.1,
-        colors: Tuple[str, str] = ("blue", "red"),
-        bg_alpha: float = 0.2,
+        pad: float = 0.05,
+        colors: Tuple[str, str] = ("#0862ca", "#fd1205"),
+        bgcolors: Tuple[str, str] = ("#cddff4", "#fecfdc"),
+        bg_alpha: float = 1,
         fg_alpha: float = 0.9,
         con_alpha: float = 0.2,
         titlesize: int = 16,
@@ -71,6 +72,7 @@ class BiseparationPlot:
         self.margin = margin
         self.pad = pad
         self.colors = colors
+        self.bgcolors = bgcolors
         self.bg_alpha = bg_alpha
         self.fg_alpha = fg_alpha
         self.con_alpha = con_alpha
@@ -218,7 +220,7 @@ class BiseparationPlot:
             x=self.df.loc[self.df["highlight_all"] != 1, self.x],
             y=self.df.loc[self.df["highlight_all"] != 1, self.y],
             color=self.df.loc[self.df["highlight_all"] != 1, self.obs].apply(
-                lambda x: self.colors[0] if x == 0 else self.colors[1]
+                lambda x: self.bgcolors[0] if x == 0 else self.bgcolors[1]
             ),
             alpha=self.bg_alpha,
             zorder=0,
@@ -245,10 +247,14 @@ class BiseparationPlot:
         """Add axes with rugs to figure."""
         self.rax_y = self.ax.inset_axes(bounds=[0.97, 0, 0.03, 1], zorder=0)
         for index, value in self.df[self.y].items():
+            if self.df.loc[index, "highlight_all"] == 1:
+                color_set = self.colors
+            else:
+                color_set = self.bgcolors
             color = (
-                self.colors[0]
+                color_set[0]
                 if self.df.loc[index, self.obs] == 0
-                else self.colors[1]
+                else color_set[1]
             )
             self.rax_y.hlines(
                 y=value, xmin=0, xmax=1, color=color, alpha=0.5, lw=3
@@ -260,10 +266,14 @@ class BiseparationPlot:
         # And the x-rug.
         self.rax_x = self.ax.inset_axes(bounds=[0, 0, 1, 0.03], zorder=0)
         for index, value in self.df[self.x].items():
+            if self.df.loc[index, "highlight_all"] == 1:
+                color_set = self.colors
+            else:
+                color_set = self.bgcolors
             color = (
-                self.colors[0]
+                color_set[0]
                 if self.df.loc[index, self.obs] == 0
-                else self.colors[1]
+                else color_set[1]
             )
             self.rax_x.vlines(
                 x=value, ymin=0, ymax=1, color=color, alpha=0.5, lw=3
