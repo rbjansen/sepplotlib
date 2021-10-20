@@ -16,9 +16,10 @@ class BiseparationPlot:
     x: Column name for the model predictions on the x-axis.
     y: Column name for the model predictions on the y-axis.
     obs: Column name for the actual observations.
+    lab: Column name for the row labels.
     framesize: Linewidth of figure frame.
     width: Width of figure frame. Aspect ratio is set equal.
-    n_worst: Integer number of most distant predictions to annotate.
+    n_worst: Integer number of most divergent predictions to annotate.
     markersize: Size of scatter plot markers.
     margin: Float margin outside figure frame per axis coords.
     pad: Float padding inside figure frame per data coords.

@@ -7,20 +7,36 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-class ModelCriticism:
+class ModelCriticismPlot:
     """Produce an model criticism plot.
 
     Attributes
     ----------
-    y_true:
-    y_pred:
-    lab: Series of labels with same index as s.
-    title: Title to put on plot.
-    n_worst: Number of worst error annotations to plot.
-    cmap: Matplotlib colormap to apply to top ax.
-    textsize: Base textsize. Tick and title are relative to this.
+    df: pd.DataFrame containing the predictions of x and y, as well as actuals
+        and labels.
+    y_true: Column name for the actual observations.
+    y_pred: Column name for the model predictions.
+    lab: Column name for the row labels.
     figsize: Tuple of (width, height) to pass to figsize.
-    path: Optional path to write figure to.
+    framesize: Linewidth of figure frame.
+    n_worst: Number of worst error annotations to plot.
+    colors: Tuple of colors strings for the negative and positive. For example:
+        ("#0000FF", "red").
+    title: String title to give to figure. Title is empty by default.
+    titlesize: Textsize of figure title.
+    xlabel: String label for the x-axis.
+    ylabel: String label for the y-axis.
+    markersize: Size of markers in scatter plot.
+    markeralpha: Alpha of markers in scatter plot.
+    labelsize: Textsize of xlabel and ylabel.
+    annot_size: Textsize of annotations.
+    annot_spacing: Spacing in axes coordinates between annotations.
+    ticksize: Size of axes ticks.
+    pad: Padding to add inside figure frame, in data coordinates.
+    margin: Margin to add outside figure frame, in axes coordinates.
+    path: Optional output path to save figure to.
+    dpi: Optional integer value for dots per inch. Increase for higher output
+        quality.
     """
 
     def __init__(
@@ -78,7 +94,7 @@ class ModelCriticism:
             gridspec_kw={"height_ratios": [4, 1]},
         )
         (
-            ModelCriticism.setup_axs(self)
+            ModelCriticismPlot.setup_axs(self)
             .prepare_data()
             .scatter()
             .density()
@@ -88,7 +104,7 @@ class ModelCriticism:
             .annotate()
         )
         if path is not None:
-            ModelCriticism.save(self, path, dpi)
+            ModelCriticismPlot.save(self, path, dpi)
 
     def __str__(self):
         return f"Model criticism plot of {self.title}."
