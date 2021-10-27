@@ -164,6 +164,7 @@ class ModelCriticismPlot:
             color=self.df.fgcolor,
             alpha=self.markeralpha,
             s=self.markersize,
+            zorder=-3,
         )
         return self
 
@@ -185,7 +186,7 @@ class ModelCriticismPlot:
     def rug(self):
         """Add rug to figure."""
         self.rax_y = self.axs[0].inset_axes(
-            bounds=[0.96, 0, 0.04, 1], zorder=4
+            bounds=[0.96, 0, 0.04, 1], zorder=-1
         )
         for idx, row in self.df.iterrows():
             self.rax_y.hlines(
@@ -212,7 +213,7 @@ class ModelCriticismPlot:
                 xmin=row[self.y_pred],
                 xmax=1 + self.pad,
                 color=row["bgcolor"],
-                zorder=3,
+                zorder=-2,
                 lw=1.5,
             )
         for idx, row in self.df.loc[self.df.worst_fn == 1].iterrows():
@@ -221,7 +222,7 @@ class ModelCriticismPlot:
                 xmin=row[self.y_pred],
                 xmax=1 + self.pad,
                 color=row["bgcolor"],
-                zorder=3,
+                zorder=-2,
                 lw=1.5,
             )
         return self
