@@ -192,7 +192,9 @@ class ModelCriticismPlot:
                 y=idx, xmin=0, xmax=1, color=row["fgcolor"], alpha=0.5, lw=3
             )
         # Draw highlight over this background rug.
-        for idx, row in self.df.query("worst_fp == 1 or worst_fn == 1").iterrows():
+        for idx, row in self.df.query(
+            "worst_fp == 1 or worst_fn == 1"
+        ).iterrows():
             self.rax_y.hlines(
                 y=idx, xmin=0, xmax=1, color=row["fgcolor"], alpha=0.5, lw=3
             )

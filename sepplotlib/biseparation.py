@@ -256,17 +256,25 @@ class BiseparationPlot:
         """Add axes with rugs to figure."""
         self.rax_y = self.ax.inset_axes(bounds=[0.97, 0, 0.03, 1], zorder=0)
         for index, value in self.df[self.y].items():
-            if self.df.loc[index, "highlight_all"] == 1:
+            if self.df.loc[index, f"highlight_{self.y}"] == 1:
                 color_set = self.fgcolors
+                zorder = 1
             else:
                 color_set = self.bgcolors
+                zorder = 0
             color = (
                 color_set[0]
                 if self.df.loc[index, self.obs] == 0
                 else color_set[1]
             )
             self.rax_y.hlines(
-                y=value, xmin=0, xmax=1, color=color, alpha=0.5, lw=3
+                y=value,
+                xmin=0,
+                xmax=1,
+                color=color,
+                alpha=0.5,
+                lw=3,
+                zorder=zorder,
             )
         self.rax_y.set_xticks([])
         self.rax_y.set_yticks([])
@@ -275,17 +283,25 @@ class BiseparationPlot:
         # And the x-rug.
         self.rax_x = self.ax.inset_axes(bounds=[0, 0, 1, 0.03], zorder=0)
         for index, value in self.df[self.x].items():
-            if self.df.loc[index, "highlight_all"] == 1:
+            if self.df.loc[index, f"highlight_{self.x}"] == 1:
                 color_set = self.fgcolors
+                zorder = 1
             else:
                 color_set = self.bgcolors
+                zorder = 0
             color = (
                 color_set[0]
                 if self.df.loc[index, self.obs] == 0
                 else color_set[1]
             )
             self.rax_x.vlines(
-                x=value, ymin=0, ymax=1, color=color, alpha=0.5, lw=3
+                x=value,
+                ymin=0,
+                ymax=1,
+                color=color,
+                alpha=0.5,
+                lw=3,
+                zorder=zorder,
             )
         self.rax_x.set_xticks([])
         self.rax_x.set_yticks([])
