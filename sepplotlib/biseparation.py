@@ -43,7 +43,7 @@ class BiseparationPlot:
         y: str,
         obs: str,
         lab: str,
-        framesize: float = 3,
+        framesize: float = 2,
         width: int = 6,
         n_worst: int = 5,
         markersize: int = 300,
