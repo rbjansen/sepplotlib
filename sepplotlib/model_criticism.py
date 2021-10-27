@@ -29,8 +29,8 @@ class ModelCriticismPlot:
     markersize: Size of markers in scatter plot.
     markeralpha: Alpha of markers in scatter plot.
     labelsize: Textsize of xlabel and ylabel.
-    annot_size: Textsize of annotations.
-    annot_spacing: Spacing in axes coordinates between annotations.
+    annotsize: Textsize of annotations.
+    annotspacing: Spacing in axes coordinates between annotations.
     ticksize: Size of axes ticks.
     pad: Padding to add inside figure frame, in data coordinates.
     margin: Margin to add outside figure frame, in axes coordinates.
@@ -55,8 +55,8 @@ class ModelCriticismPlot:
         markersize: int = 100,
         markeralpha: float = 1,
         labelsize: int = 18,
-        annot_size: int = 12,
-        annot_spacing: float = 0.05,
+        annotsize: int = 12,
+        annotspacing: float = 0.05,
         ticksize: int = 16,
         pad: float = 0.1,
         margin: float = 0.2,
@@ -79,8 +79,8 @@ class ModelCriticismPlot:
         self.markeralpha = markeralpha
         self.labelsize = labelsize
         self.ticksize = ticksize
-        self.annot_size = annot_size
-        self.annot_spacing = annot_spacing
+        self.annotsize = annotsize
+        self.annotspacing = annotspacing
         self.pad = pad
         self.margin = margin
         self.path = path
@@ -239,14 +239,14 @@ class ModelCriticismPlot:
                 va=va,
                 ha=ha,
                 color=self.color_array[idx],
-                size=self.annot_size,
+                size=self.annotsize,
             )
             # Little trick here to actually attach to the left center point.
             self.axs[0].annotate(
                 "",
                 xy=(1 + self.pad, self.sorted_index[idx]),
                 xycoords="data",
-                xytext=(1 + self.pad + self.margin, top - step),
+                xytext=(0.99 + self.pad + self.margin, top - step),
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
@@ -256,7 +256,7 @@ class ModelCriticismPlot:
                     lw=1.5,
                 ),
             )
-            step += self.annot_spacing
+            step += self.annotspacing
         # Continue with positives.
         for idx in self.worst_fn:
             self.axs[0].annotate(
@@ -268,13 +268,13 @@ class ModelCriticismPlot:
                 va=va,
                 ha=ha,
                 color=self.color_array[idx],
-                size=self.annot_size,
+                size=self.annotsize,
             )
             self.axs[0].annotate(
                 "",
                 xy=(1 + self.pad, self.sorted_index[idx]),
                 xycoords="data",
-                xytext=(1 + self.pad + self.margin, top - step),
+                xytext=(0.99 + self.pad + self.margin, top - step),
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
@@ -284,7 +284,7 @@ class ModelCriticismPlot:
                     lw=1.5,
                 ),
             )
-            step += self.annot_spacing
+            step += self.annotspacing
 
         return self
 

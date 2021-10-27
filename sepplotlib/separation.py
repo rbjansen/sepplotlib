@@ -28,6 +28,7 @@ class SeparationPlot:
         figsize: Tuple[float, float] = (9, 1.5),
         colors: Tuple[str, str] = ("#FEF0D9", "#E34A33"),
         path: Optional[str] = None,
+        dpi: Optional[int] = 200,
     ):
         self.y_true = y_true
         self.y_pred = y_pred
@@ -38,7 +39,7 @@ class SeparationPlot:
         self.fig, self.ax = plt.subplots(figsize=self.figsize)
         SeparationPlot.set_frame(self).plot()
         if path is not None:
-            SeparationPlot.save(self, path)
+            SeparationPlot.save(self, path, dpi)
 
     def __str__(self):
         return f"Separation plot of {self.title}."
@@ -60,6 +61,8 @@ class SeparationPlot:
     def plot(self):
         """Plot separation plot into fig."""
         # Prepare params.
+        if self.y_pred.isna().any() or self.y_true.isna().any():
+            raise RuntimeError("Missing values found in the provided series.")
         color_array = np.array(self.colors)
         sorted_index = np.argsort(self.y_pred)
         sorted_obs = self.y_true[sorted_index].astype(int)

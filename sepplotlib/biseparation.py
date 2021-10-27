@@ -20,17 +20,21 @@ class BiseparationPlot:
     framesize: Linewidth of figure frame.
     width: Width of figure frame. Aspect ratio is set equal.
     n_worst: Integer number of most divergent predictions to annotate.
+    title: String title to give to figure. Title is empty by default.
+    titlesize: Textsize of figure title.
     markersize: Size of scatter plot markers.
     margin: Float margin outside figure frame per axis coords.
     pad: Float padding inside figure frame per data coords.
-    colors: Tuple of colors strings for the negative and positive. For example:
-        ("#0000FF", "red").
+    fgcolors: Tuple of color strings for the negative and positive highlights
+        in the foreground. For example: ("#0000FF", "red").
+    bgcolors: Tuple of color strings for the negative and positive in the
+        background. For example: ("#0000FF", "red").
     bg_alpha: Alpha of background scatter.
     fg_alpha: Alpha of foreground scatter.
     con_alpha: Alpha of connections between scatter and rug.
-    titlesize: Integer value for title size.
-    labelsize: Integer value for label size.
-    labelspacing: Float value for space between the annotation labels.
+    labelsize: Integer value for title size.
+    annotsize: Integer value for annotation size.
+    annotspacing: Float value for space between the annotation labels.
     path: Optional output path to save figure to.
     dpi: Optional integer value for dots per inch. Increase for higher output
         quality.
@@ -46,19 +50,21 @@ class BiseparationPlot:
         framesize: float = 2,
         width: int = 6,
         n_worst: int = 5,
+        title: str = "",
+        titlesize: int = 16,
         markersize: int = 300,
         margin: float = 0.1,
-        pad: float = 0.05,
-        colors: Tuple[str, str] = ("#0862ca", "#fd1205"),
+        pad: float = 0.1,
+        fgcolors: Tuple[str, str] = ("#0862ca", "#fd1205"),
         bgcolors: Tuple[str, str] = ("#cddff4", "#fecfdc"),
         bg_alpha: float = 1,
         fg_alpha: float = 0.9,
         con_alpha: float = 0.2,
-        titlesize: int = 16,
-        labelsize: int = 14,
-        labelspacing: float = 0.05,
+        labelsize: int = 18,
+        annotsize: int = 14,
+        annotspacing: float = 0.05,
         path: Optional[str] = None,
-        dpi: Optional[int] = None,
+        dpi: Optional[int] = 200,
     ):
         self.df = df.copy()
         self.x = x
@@ -68,17 +74,19 @@ class BiseparationPlot:
         self.framesize = framesize
         self.width = width
         self.n_worst = n_worst
+        self.title = title
+        self.titlesize = titlesize
         self.markersize = markersize
         self.margin = margin
         self.pad = pad
-        self.colors = colors
+        self.fgcolors = fgcolors
         self.bgcolors = bgcolors
         self.bg_alpha = bg_alpha
         self.fg_alpha = fg_alpha
         self.con_alpha = con_alpha
-        self.titlesize = titlesize
         self.labelsize = labelsize
-        self.labelspacing = labelspacing
+        self.annotsize = annotsize
+        self.annotspacing = annotspacing
 
         self.fig, self.ax = plt.subplots(
             figsize=(self.width, self.width),
@@ -124,8 +132,9 @@ class BiseparationPlot:
             zorder=1,
         )
         # Axis labels.
-        self.ax.set_ylabel(self.y, size=self.titlesize, labelpad=20)
-        self.ax.set_xlabel(self.x, size=self.titlesize, labelpad=20)
+        self.ax.set_ylabel(self.y, size=self.labelsize, labelpad=20)
+        self.ax.set_xlabel(self.x, size=self.labelsize, labelpad=20)
+        self.ax.set_title(self.title, size=self.titlesize, pad=60)
         self.ax.xaxis.set_label_position("top")
 
         return self
@@ -232,7 +241,7 @@ class BiseparationPlot:
             x=self.df.loc[self.df["highlight_all"] == 1, self.x],
             y=self.df.loc[self.df["highlight_all"] == 1, self.y],
             color=self.df.loc[self.df["highlight_all"] == 1, self.obs].apply(
-                lambda x: self.colors[0] if x == 0 else self.colors[1]
+                lambda x: self.fgcolors[0] if x == 0 else self.fgcolors[1]
             ),
             alpha=self.fg_alpha,
             zorder=2,
@@ -248,7 +257,7 @@ class BiseparationPlot:
         self.rax_y = self.ax.inset_axes(bounds=[0.97, 0, 0.03, 1], zorder=0)
         for index, value in self.df[self.y].items():
             if self.df.loc[index, "highlight_all"] == 1:
-                color_set = self.colors
+                color_set = self.fgcolors
             else:
                 color_set = self.bgcolors
             color = (
@@ -267,7 +276,7 @@ class BiseparationPlot:
         self.rax_x = self.ax.inset_axes(bounds=[0, 0, 1, 0.03], zorder=0)
         for index, value in self.df[self.x].items():
             if self.df.loc[index, "highlight_all"] == 1:
-                color_set = self.colors
+                color_set = self.fgcolors
             else:
                 color_set = self.bgcolors
             color = (
@@ -297,9 +306,9 @@ class BiseparationPlot:
             self.df[f"highlight_{self.y}"] == 1
         ].iterrows():
             color = (
-                self.colors[0]
+                self.fgcolors[0]
                 if self.df.loc[index, self.obs] == 0
-                else self.colors[1]
+                else self.fgcolors[1]
             )
             self.ax.hlines(
                 y=value[self.y],
@@ -315,9 +324,9 @@ class BiseparationPlot:
             self.df[f"highlight_{self.x}"] == 1
         ].iterrows():
             color = (
-                self.colors[0]
+                self.fgcolors[0]
                 if self.df.loc[index, self.obs] == 0
-                else self.colors[1]
+                else self.fgcolors[1]
             )
             self.ax.vlines(
                 x=value[self.x],
@@ -368,9 +377,9 @@ class BiseparationPlot:
                 textcoords=trans,
                 va=va,
                 ha=ha,
-                color=self.colors[0],
+                color=self.fgcolors[0],
                 rotation=rotation,
-                size=self.labelsize,
+                size=self.annotsize,
             )
             # Little trick here to actually attach to the left center point.
             self.ax.annotate(
@@ -385,13 +394,13 @@ class BiseparationPlot:
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
-                    edgecolor=self.colors[0],
+                    edgecolor=self.fgcolors[0],
                     shrinkB=0,
                     shrinkA=0,
                     lw=2,
                 ),
             )
-            step += self.labelspacing
+            step += self.annotspacing
         # Continue from location with the positives.
         for _, value in (
             self.df.loc[self.df[f"pos_{model}"] == 1]
@@ -410,9 +419,9 @@ class BiseparationPlot:
                 textcoords=trans,
                 va=va,
                 ha=ha,
-                color=self.colors[1],
+                color=self.fgcolors[1],
                 rotation=rotation,
-                size=self.labelsize,
+                size=self.annotsize,
             )
             # Little trick here to actually attach to the left center point.
             self.ax.annotate(
@@ -427,13 +436,13 @@ class BiseparationPlot:
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
-                    edgecolor=self.colors[1],
+                    edgecolor=self.fgcolors[1],
                     shrinkB=0,
                     shrinkA=0,
                     lw=1.5,
                 ),
             )
-            step += self.labelspacing
+            step += self.annotspacing
 
         return self
 
