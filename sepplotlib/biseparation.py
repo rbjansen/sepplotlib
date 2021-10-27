@@ -254,7 +254,7 @@ class BiseparationPlot:
 
     def rug(self):
         """Add axes with rugs to figure."""
-        self.rax_y = self.ax.inset_axes(bounds=[0.97, 0, 0.03, 1], zorder=0)
+        self.rax_y = self.ax.inset_axes(bounds=[0.97, 0, 0.03, 1], zorder=-1)
         for index, value in self.df[self.y].items():
             if self.df.loc[index, f"highlight_{self.y}"] == 1:
                 color_set = self.fgcolors
@@ -281,7 +281,7 @@ class BiseparationPlot:
         self.rax_y.margins(0.02)
         self.rax_y.axis("off")
         # And the x-rug.
-        self.rax_x = self.ax.inset_axes(bounds=[0, 0, 1, 0.03], zorder=0)
+        self.rax_x = self.ax.inset_axes(bounds=[0, 0, 1, 0.03], zorder=-1)
         for index, value in self.df[self.x].items():
             if self.df.loc[index, f"highlight_{self.x}"] == 1:
                 color_set = self.fgcolors
