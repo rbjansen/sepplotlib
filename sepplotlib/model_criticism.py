@@ -147,21 +147,22 @@ class ModelCriticismPlot:
 
     def prepare_data(self):
         """Prepare sorted data arrays."""
-        self.y_pred = np.sort(self.y_pred)
         color_set = np.array(self.linecolors)
         self.sorted_index = np.argsort(self.y_pred)  # Used to index actuals.
+        self.y_pred = np.sort(self.y_pred)
         self.y_true = self.y_true[self.sorted_index].astype(int)
         self.lab = self.lab[self.sorted_index]
         self.color_array = color_set[self.y_true]
         self.color_array[self.worst_fp] = self.colors[0]
         self.color_array[self.worst_fn] = self.colors[1]
+        self.index = np.arange(1, len(self.y_pred) + 1)
         return self
 
     def scatter(self):
         """Plot scatter into top ax."""
         self.axs[0].scatter(
             self.y_pred,
-            self.sorted_index,
+            self.index,
             color=self.color_array,
             alpha=self.markeralpha,
             s=self.markersize,
@@ -189,7 +190,7 @@ class ModelCriticismPlot:
         self.rax_y = self.axs[0].inset_axes(
             bounds=[0.96, 0, 0.04, 1], zorder=4
         )
-        for color, value in zip(self.color_array, self.sorted_index):
+        for color, value in zip(self.color_array, self.index):
             self.rax_y.hlines(
                 y=value, xmin=0, xmax=1, color=color, alpha=0.5, lw=3
             )
@@ -232,7 +233,7 @@ class ModelCriticismPlot:
         for idx in self.worst_fp:
             self.axs[0].annotate(
                 self.lab[idx],
-                xy=(1 + self.pad, self.sorted_index[idx]),
+                xy=(1 + self.pad, self.index[idx]),
                 xycoords="data",
                 xytext=(1 + self.pad + self.margin, top - step),
                 textcoords=trans,
@@ -244,7 +245,7 @@ class ModelCriticismPlot:
             # Little trick here to actually attach to the left center point.
             self.axs[0].annotate(
                 "",
-                xy=(1 + self.pad, self.sorted_index[idx]),
+                xy=(1 + self.pad, self.index[idx]),
                 xycoords="data",
                 xytext=(0.99 + self.pad + self.margin, top - step),
                 textcoords=trans,
@@ -261,7 +262,7 @@ class ModelCriticismPlot:
         for idx in self.worst_fn:
             self.axs[0].annotate(
                 self.lab[idx],
-                xy=(1 + self.pad, self.sorted_index[idx]),
+                xy=(1 + self.pad, self.index[idx]),
                 xycoords="data",
                 xytext=(1 + self.pad + self.margin, top - step),
                 textcoords=trans,
@@ -272,7 +273,7 @@ class ModelCriticismPlot:
             )
             self.axs[0].annotate(
                 "",
-                xy=(1 + self.pad, self.sorted_index[idx]),
+                xy=(1 + self.pad, self.index[idx]),
                 xycoords="data",
                 xytext=(0.99 + self.pad + self.margin, top - step),
                 textcoords=trans,
