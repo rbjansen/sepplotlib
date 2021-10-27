@@ -44,9 +44,9 @@ class BiseparationPlot:
         obs: str,
         lab: str,
         framesize: float = 3,
-        width: int = 10,
+        width: int = 6,
         n_worst: int = 5,
-        markersize: int = 400,
+        markersize: int = 300,
         margin: float = 0.1,
         pad: float = 0.05,
         colors: Tuple[str, str] = ("#0862ca", "#fd1205"),
@@ -55,7 +55,7 @@ class BiseparationPlot:
         fg_alpha: float = 0.9,
         con_alpha: float = 0.2,
         titlesize: int = 16,
-        labelsize: int = 12,
+        labelsize: int = 14,
         labelspacing: float = 0.05,
         path: Optional[str] = None,
         dpi: Optional[int] = None,
@@ -308,7 +308,7 @@ class BiseparationPlot:
                 color=color,
                 alpha=self.con_alpha,
                 zorder=3,
-                lw=3,
+                lw=1.5,
             )
         # vlines for the x-axis.
         for index, value in self.df.loc[
@@ -326,7 +326,7 @@ class BiseparationPlot:
                 color=color,
                 alpha=self.con_alpha,
                 zorder=3,
-                lw=3,
+                lw=1.5,
             )
         return self
 
@@ -430,7 +430,7 @@ class BiseparationPlot:
                     edgecolor=self.colors[1],
                     shrinkB=0,
                     shrinkA=0,
-                    lw=2,
+                    lw=1.5,
                 ),
             )
             step += self.labelspacing

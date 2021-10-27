@@ -49,19 +49,19 @@ class ModelCriticismPlot:
         framesize: int = 2,
         n_worst: int = 10,
         title: str = "",
-        titlesize: int = 18,
+        titlesize: int = 16,
         xlabel: str = "Predicted probability (p)",
         ylabel: str = "Observation (ordered by p)",
-        markersize: int = 50,
+        markersize: int = 100,
         markeralpha: float = 1,
-        labelsize: int = 16,
+        labelsize: int = 18,
         annot_size: int = 12,
         annot_spacing: float = 0.05,
-        ticksize: int = 12,
+        ticksize: int = 16,
         pad: float = 0.1,
-        margin: float = 0.25,
+        margin: float = 0.2,
         path: Optional[str] = None,
-        dpi: Optional[int] = None,
+        dpi: Optional[int] = 200,
     ):
         self.y_true = df[y_true].to_numpy()
         self.y_pred = df[y_pred].to_numpy()
@@ -130,7 +130,7 @@ class ModelCriticismPlot:
         self.axs[1].set_yticks([])
         self.axs[1].set_xticks([0, 0.25, 0.5, 0.75, 1])
         plt.subplots_adjust(hspace=0)
-        self.axs[0].set_title(self.title, size=self.titlesize)
+        self.axs[0].set_title(self.title, size=self.titlesize, pad=20)
         # Thicken frame.
         for axis in ["top", "bottom", "left", "right"]:
             self.axs[0].spines[axis].set_linewidth(self.framesize)
@@ -180,13 +180,14 @@ class ModelCriticismPlot:
             palette=self.colors,
             legend=False,
             clip=(0.0, 1.0),
+            lw=1.5
         )
         return self
 
     def rug(self):
         """Add rug to figure."""
         self.rax_y = self.axs[0].inset_axes(
-            bounds=[0.96, 0, 0.045, 1], zorder=4
+            bounds=[0.96, 0, 0.04, 1], zorder=4
         )
         for color, value in zip(self.color_array, self.sorted_index):
             self.rax_y.hlines(
@@ -208,7 +209,7 @@ class ModelCriticismPlot:
                 xmax=1 + self.pad,
                 color=linecolor_array[idx],
                 zorder=3,
-                lw=2,
+                lw=1.5,
             )
         for idx in self.worst_fn:
             self.axs[0].hlines(
@@ -217,7 +218,7 @@ class ModelCriticismPlot:
                 xmax=1 + self.pad,
                 color=linecolor_array[idx],
                 zorder=3,
-                lw=2,
+                lw=1.5,
             )
         return self
 
@@ -252,7 +253,7 @@ class ModelCriticismPlot:
                     edgecolor=self.color_array[idx],
                     shrinkB=0,
                     shrinkA=0,
-                    lw=2,
+                    lw=1.5,
                 ),
             )
             step += self.annot_spacing
@@ -280,7 +281,7 @@ class ModelCriticismPlot:
                     edgecolor=self.color_array[idx],
                     shrinkB=0,
                     shrinkA=0,
-                    lw=2,
+                    lw=1.5,
                 ),
             )
             step += self.annot_spacing
