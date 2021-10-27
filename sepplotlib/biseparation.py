@@ -233,7 +233,7 @@ class BiseparationPlot:
             ),
             alpha=self.bg_alpha,
             zorder=0,
-            linewidths=3,
+            linewidths=2,
             s=self.markersize,
         )
         # Separate scatter for highlights (z-order can't be conditional).
@@ -245,7 +245,7 @@ class BiseparationPlot:
             ),
             alpha=self.fg_alpha,
             zorder=2,
-            linewidths=2,
+            linewidths=1,
             edgecolor="black",
             s=1.25 * self.markersize,  # A little bigger to create perspective.
         )
