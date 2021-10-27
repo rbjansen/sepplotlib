@@ -48,6 +48,8 @@ class ModelCriticismPlot:
         figsize: Tuple[int, int] = (5, 7),
         framesize: int = 2,
         n_worst: int = 10,
+        fgcolors=("#0862ca", "#fd1205"),
+        bgcolors=("#cddff4", "#fecfdc"),
         title: str = "",
         titlesize: int = 16,
         xlabel: str = "Predicted probability (p)",
@@ -63,14 +65,15 @@ class ModelCriticismPlot:
         path: Optional[str] = None,
         dpi: Optional[int] = 200,
     ):
-        self.y_true = df[y_true].to_numpy()
-        self.y_pred = df[y_pred].to_numpy()
-        self.lab = df[lab]
+        self.df = df
+        self.y_true = y_true
+        self.y_pred = y_pred
+        self.lab = lab
         self.figsize = figsize
         self.framesize = framesize
         self.n_worst = n_worst
-        self.colors = ("#0862ca", "#fd1205")
-        self.linecolors = ("#cddff4", "#fecfdc")
+        self.fgcolors = ("#0862ca", "#fd1205")
+        self.bgcolors = ("#cddff4", "#fecfdc")
         self.title = title
         self.titlesize = titlesize
         self.xlabel = xlabel
@@ -95,7 +98,6 @@ class ModelCriticismPlot:
         )
         (
             ModelCriticismPlot.setup_axs(self)
-            .find_highlights()
             .prepare_data()
             .scatter()
             .density()
@@ -137,33 +139,29 @@ class ModelCriticismPlot:
             self.axs[1].spines[axis].set_linewidth(self.framesize)
         return self
 
-    def find_highlights(self):
-        """Find predictions to highlight."""
-        self.worst_fn = np.where(self.y_true == 1)[0][: self.n_worst]
-        self.worst_fp = np.where(self.y_true == 0)[0][-self.n_worst :]
-        self.worst_fn = -np.sort(-self.worst_fn)
-        self.worst_fp = -np.sort(-self.worst_fp)
-        return self
-
     def prepare_data(self):
         """Prepare sorted data arrays."""
-        color_set = np.array(self.linecolors)
-        self.sorted_index = np.argsort(self.y_pred)  # Used to index actuals.
-        self.y_pred = np.sort(self.y_pred)
-        self.y_true = self.y_true[self.sorted_index].astype(int)
-        self.lab = self.lab[self.sorted_index]
-        self.color_array = color_set[self.y_true]
-        self.color_array[self.worst_fp] = self.colors[0]
-        self.color_array[self.worst_fn] = self.colors[1]
-        self.index = np.arange(1, len(self.y_pred) + 1)
+        df = self.df[[y_true, y_pred, lab]].sort_values(by=y_pred)
+        df["bgcolor"] = np.where(df[y_true] == 1, bgcolors[1], bgcolors[0])
+        df = df.reset_index(drop=True)
+        # Find highlights.
+        worst_fp = df.loc[df[y_true] == 0][-self.n_worst :].index
+        df["worst_fp"] = np.where(df.index.isin(worst_fp), 1, 0)
+        worst_fn = df.loc[df[y_true] == 1][: self.n_worst].index
+        df["worst_fn"] = np.where(df.index.isin(worst_fn), 1, 0)
+        # Conditional coloring.
+        df["fgcolor"] = df["bgcolor"]  # Except when...
+        df.loc[df.worst_fp == 1, "fgcolor"] = fgcolors[0]
+        df.loc[df.worst_fn == 1, "fgcolor"] = fgcolors[1]
+        self.df = df
         return self
 
     def scatter(self):
         """Plot scatter into top ax."""
         self.axs[0].scatter(
-            self.y_pred,
-            self.index,
-            color=self.color_array,
+            self.df[self.y_pred],
+            self.df.index,
+            color=self.df.fgcolor,
             alpha=self.markeralpha,
             s=self.markersize,
         )
@@ -171,17 +169,16 @@ class ModelCriticismPlot:
 
     def density(self):
         """Plot density plot into bottom ax."""
-        kde_df = pd.DataFrame({"y_true": self.y_true, "y_pred": self.y_pred})
         sns.kdeplot(
             ax=self.axs[1],
-            data=kde_df,
-            x="y_pred",
-            hue="y_true",
+            data=self.df,
+            x=y_pred,
+            hue=y_true,
             fill=True,
-            palette=self.colors,
+            palette=self.fgcolors,
             legend=False,
             clip=(0.0, 1.0),
-            lw=1.5
+            lw=1.5,
         )
         return self
 
@@ -190,9 +187,9 @@ class ModelCriticismPlot:
         self.rax_y = self.axs[0].inset_axes(
             bounds=[0.96, 0, 0.04, 1], zorder=4
         )
-        for color, value in zip(self.color_array, self.index):
+        for idx, row in self.df.iterrows():
             self.rax_y.hlines(
-                y=value, xmin=0, xmax=1, color=color, alpha=0.5, lw=3
+                y=idx, xmin=0, xmax=1, color=row["fgcolor"], alpha=0.5, lw=3
             )
         self.rax_y.set_xticks([])
         self.rax_y.set_yticks([])
@@ -202,22 +199,21 @@ class ModelCriticismPlot:
 
     def connect_rug(self):
         """Connect scatter to rug."""
-        linecolor_array = np.array(self.linecolors)[self.y_true]
-        for idx in self.worst_fp:
+        for idx, row in self.df.loc[self.df.worst_fp == 1].iterrows():
             self.axs[0].hlines(
                 y=idx,
-                xmin=self.y_pred[idx],
+                xmin=row[self.y_pred],
                 xmax=1 + self.pad,
-                color=linecolor_array[idx],
+                color=row["bgcolor"],
                 zorder=3,
                 lw=1.5,
             )
-        for idx in self.worst_fn:
+        for idx, row in self.df.loc[self.df.worst_fn == 1].iterrows():
             self.axs[0].hlines(
                 y=idx,
-                xmin=self.y_pred[idx],
+                xmin=row[self.y_pred],
                 xmax=1 + self.pad,
-                color=linecolor_array[idx],
+                color=row["bgcolor"],
                 zorder=3,
                 lw=1.5,
             )
@@ -229,29 +225,31 @@ class ModelCriticismPlot:
         top = 1 - self.axs[0]._ymargin
         trans = self.axs[0].get_xaxis_transform()
         va, ha = ("center", "left")
+        # Sort df descending since annotations hang.
+        self.df = self.df.sort_values(by=y_pred, ascending=False)
         # Annotate the negatives first.
-        for idx in self.worst_fp:
+        for idx, row in self.df.loc[self.df.worst_fp == 1].iterrows():
             self.axs[0].annotate(
-                self.lab[idx],
-                xy=(1 + self.pad, self.index[idx]),
+                row[self.lab],
+                xy=(1 + self.pad, idx),
                 xycoords="data",
                 xytext=(1 + self.pad + self.margin, top - step),
                 textcoords=trans,
                 va=va,
                 ha=ha,
-                color=self.color_array[idx],
+                color=row["fgcolor"],
                 size=self.annotsize,
             )
             # Little trick here to actually attach to the left center point.
             self.axs[0].annotate(
                 "",
-                xy=(1 + self.pad, self.index[idx]),
+                xy=(1 + self.pad, idx),
                 xycoords="data",
                 xytext=(0.99 + self.pad + self.margin, top - step),
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
-                    edgecolor=self.color_array[idx],
+                    edgecolor=row["fgcolor"],
                     shrinkB=0,
                     shrinkA=0,
                     lw=1.5,
@@ -259,27 +257,27 @@ class ModelCriticismPlot:
             )
             step += self.annotspacing
         # Continue with positives.
-        for idx in self.worst_fn:
+        for idx, row in self.df.loc[self.df.worst_fn == 1].iterrows():
             self.axs[0].annotate(
-                self.lab[idx],
-                xy=(1 + self.pad, self.index[idx]),
+                row[self.lab],
+                xy=(1 + self.pad, idx),
                 xycoords="data",
                 xytext=(1 + self.pad + self.margin, top - step),
                 textcoords=trans,
                 va=va,
                 ha=ha,
-                color=self.color_array[idx],
+                color=row["fgcolor"],
                 size=self.annotsize,
             )
             self.axs[0].annotate(
                 "",
-                xy=(1 + self.pad, self.index[idx]),
+                xy=(1 + self.pad, idx),
                 xycoords="data",
                 xytext=(0.99 + self.pad + self.margin, top - step),
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
-                    edgecolor=self.color_array[idx],
+                    edgecolor=row["fgcolor"],
                     shrinkB=0,
                     shrinkA=0,
                     lw=1.5,
