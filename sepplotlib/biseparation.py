@@ -24,7 +24,8 @@ class BiseparationPlot:
     titlesize: Textsize of figure title.
     markersize: Size of scatter plot markers.
     margin: Float margin outside figure frame per axis coords.
-    pad: Float padding inside figure frame per data coords.
+    pad: Optional float padding inside figure frame per data coords. Applies
+        0.01 of len(df) in data coords as default if unspecified.
     fgcolors: Tuple of color strings for the negative and positive highlights
         in the foreground. For example: ("#0000FF", "red").
     bgcolors: Tuple of color strings for the negative and positive in the
@@ -34,8 +35,8 @@ class BiseparationPlot:
     con_alpha: Alpha of connections between scatter and rug.
     labelsize: Integer value for title size.
     annotsize: Integer value for annotation size.
-    annotspacing: Optionl loat value for space between the annotation labels.
-        Will take 0.05 of the df length in axis transform as default if not specified.
+    annotspacing: Optional float value for space between the annotation labels.
+        Applies 0.05 of len(df) in axis coords as default if unspecified.
     path: Optional output path to save figure to.
     dpi: Optional integer value for dots per inch. Increase for higher output
         quality.
@@ -55,7 +56,7 @@ class BiseparationPlot:
         titlesize: int = 16,
         markersize: int = 300,
         margin: float = 0.1,
-        pad: float = 0.1,
+        pad: Optional[float] = None,
         fgcolors: Tuple[str, str] = ("#0862ca", "#fd1205"),
         bgcolors: Tuple[str, str] = ("#cddff4", "#fecfdc"),
         bg_alpha: float = 1,
@@ -79,7 +80,10 @@ class BiseparationPlot:
         self.titlesize = titlesize
         self.markersize = markersize
         self.margin = margin
-        self.pad = pad
+        if pad is not None:
+            self.pad = pad
+        else:
+            self.pad = 0.1 * len(self.df)
         self.fgcolors = fgcolors
         self.bgcolors = bgcolors
         self.bg_alpha = bg_alpha
