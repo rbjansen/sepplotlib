@@ -34,7 +34,8 @@ class BiseparationPlot:
     con_alpha: Alpha of connections between scatter and rug.
     labelsize: Integer value for title size.
     annotsize: Integer value for annotation size.
-    annotspacing: Float value for space between the annotation labels.
+    annotspacing: Optionl loat value for space between the annotation labels.
+        Will take 0.05 of the df length in axis transform as default if not specified.
     path: Optional output path to save figure to.
     dpi: Optional integer value for dots per inch. Increase for higher output
         quality.
@@ -62,7 +63,7 @@ class BiseparationPlot:
         con_alpha: float = 0.2,
         labelsize: int = 18,
         annotsize: int = 14,
-        annotspacing: float = 0.05,
+        annotspacing: Optional[float] = None,
         path: Optional[str] = None,
         dpi: Optional[int] = 200,
     ):
@@ -86,7 +87,10 @@ class BiseparationPlot:
         self.con_alpha = con_alpha
         self.labelsize = labelsize
         self.annotsize = annotsize
-        self.annotspacing = annotspacing
+        if annotspacing is not None:
+            self.annotspacing = annotspacing
+        else:
+            self.annotspacing = 0.05 * len(self.df)
 
         self.fig, self.ax = plt.subplots(
             figsize=(self.width, self.width),
