@@ -10,8 +10,9 @@ class SeparationPlot:
 
     Attributes
     ----------
-    y_true: np.array of actuals.
-    y_pred: np.array of predictions.
+    df: pd.DataFrame containing the predictions and actuals.
+    y_true: Column name for the actual observations.
+    y_pred: Column name for the model predictions.
     title: String title to give to figure. Title is empty by default.
     figsize: Tuple of figsize by width and height in inches.
     colors: Tuple of string colors for the negative and positive. Example:
@@ -22,16 +23,17 @@ class SeparationPlot:
 
     def __init__(
         self,
-        y_true: np.ndarray,
-        y_pred: np.ndarray,
+        df: pd.DataFrame,
+        y_true: str,
+        y_pred: str,
         title: str = "",
         figsize: Tuple[float, float] = (9, 1.5),
         colors: Tuple[str, str] = ("#FEF0D9", "#E34A33"),
         path: Optional[str] = None,
         dpi: Optional[int] = 200,
     ):
-        self.y_true = y_true
-        self.y_pred = y_pred
+        self.y_true = np.array(df[y_true])
+        self.y_pred = np.array(df[y_pred])
         self.title = title
         self.figsize = figsize
         self.colors = colors

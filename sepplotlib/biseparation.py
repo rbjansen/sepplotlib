@@ -7,7 +7,7 @@ import pandas as pd
 
 
 class BiseparationPlot:
-    """Make a biseparation plot.
+    """Make a bi-separation plot.
 
     Attributes
     ----------

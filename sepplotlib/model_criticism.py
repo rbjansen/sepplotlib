@@ -12,8 +12,7 @@ class ModelCriticismPlot:
 
     Attributes
     ----------
-    df: pd.DataFrame containing the predictions of x and y, as well as actuals
-        and labels.
+    df: pd.DataFrame containing the predictions, actuals and labels.
     y_true: Column name for the actual observations.
     y_pred: Column name for the model predictions.
     lab: Column name for the row labels.
