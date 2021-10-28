@@ -61,7 +61,7 @@ class SeparationPlot:
     def plot(self):
         """Plot separation plot into fig."""
         # Prepare params.
-        if self.y_pred.isna().any() or self.y_true.isna().any():
+        if np.isnan(self.y_pred).any() or np.isnan(self.y_true).any():
             raise RuntimeError("Missing values found in the provided series.")
         color_array = np.array(self.colors)
         sorted_index = np.argsort(self.y_pred)

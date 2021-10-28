@@ -68,7 +68,7 @@ class BiseparationPlot:
         path: Optional[str] = None,
         dpi: Optional[int] = 200,
     ):
-        self.df = df.copy()
+        self.df = df.copy().reset_index()
         self.x = x
         self.y = y
         self.obs = obs
