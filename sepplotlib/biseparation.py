@@ -91,7 +91,7 @@ class BiseparationPlot:
         self.fig, self.ax = plt.subplots(
             figsize=(self.width, self.width),
         )
-        lims = (0 - self.pad, 1 + self.pad)
+        lims = (0 - self.pad, len(self.df) + self.pad)
 
         (
             BiseparationPlot.set_frame(self)
@@ -224,10 +224,13 @@ class BiseparationPlot:
         return self
 
     def scatter(self):
-        """Make scatter plot."""
+        """Make scatter plot.
+
+        For each row, plot the sorting index for x and y.
+        """
         self.ax.scatter(
-            x=self.df.loc[self.df["highlight_all"] != 1, self.x],
-            y=self.df.loc[self.df["highlight_all"] != 1, self.y],
+            x=self.df.loc[self.df["highlight_all"] != 1, f"order_{self.x}"],
+            y=self.df.loc[self.df["highlight_all"] != 1, f"order_{self.y}"],
             color=self.df.loc[self.df["highlight_all"] != 1, self.obs].apply(
                 lambda x: self.bgcolors[0] if x == 0 else self.bgcolors[1]
             ),
@@ -238,8 +241,8 @@ class BiseparationPlot:
         )
         # Separate scatter for highlights (z-order can't be conditional).
         self.ax.scatter(
-            x=self.df.loc[self.df["highlight_all"] == 1, self.x],
-            y=self.df.loc[self.df["highlight_all"] == 1, self.y],
+            x=self.df.loc[self.df["highlight_all"] == 1, f"order_{self.x}"],
+            y=self.df.loc[self.df["highlight_all"] == 1, f"order_{self.y}"],
             color=self.df.loc[self.df["highlight_all"] == 1, self.obs].apply(
                 lambda x: self.fgcolors[0] if x == 0 else self.fgcolors[1]
             ),
@@ -255,7 +258,7 @@ class BiseparationPlot:
     def rug(self):
         """Add axes with rugs to figure."""
         self.rax_y = self.ax.inset_axes(bounds=[0.97, 0, 0.03, 1], zorder=-1)
-        for index, value in self.df[self.y].items():
+        for index, value in self.df[f"order_{self.y}"].items():
             if self.df.loc[index, f"highlight_{self.y}"] == 1:
                 color_set = self.fgcolors
                 zorder = 1
@@ -270,7 +273,7 @@ class BiseparationPlot:
             self.rax_y.hlines(
                 y=value,
                 xmin=0,
-                xmax=1,
+                xmax=len(self.df),
                 color=color,
                 alpha=0.5,
                 lw=3,
@@ -280,7 +283,7 @@ class BiseparationPlot:
         self.rax_y.axis("off")
         # And the x-rug.
         self.rax_x = self.ax.inset_axes(bounds=[0, 0, 1, 0.03], zorder=-1)
-        for index, value in self.df[self.x].items():
+        for index, value in self.df[f"order_{self.x}"].items():
             if self.df.loc[index, f"highlight_{self.x}"] == 1:
                 color_set = self.fgcolors
                 zorder = 1
@@ -295,7 +298,7 @@ class BiseparationPlot:
             self.rax_x.vlines(
                 x=value,
                 ymin=0,
-                ymax=1,
+                ymax=len(self.df),
                 color=color,
                 alpha=0.5,
                 lw=3,
@@ -304,7 +307,7 @@ class BiseparationPlot:
         self.rax_x.margins(0.02)
         self.rax_x.axis("off")
         # Set some space for the rugs.
-        xpad, ypad = (0 - self.pad, 1 + self.pad)
+        xpad, ypad = (0 - self.pad, len(self.df) + self.pad)
         self.ax.set_xlim(xpad, ypad)
         self.ax.set_ylim(xpad, ypad)
         self.rax_y.set_ylim(xpad, ypad)
@@ -323,9 +326,9 @@ class BiseparationPlot:
                 else self.fgcolors[1]
             )
             self.ax.hlines(
-                y=value[self.y],
-                xmin=value[self.x],
-                xmax=1 + self.pad,
+                y=value[f"order_{self.y}"],
+                xmin=value[f"order_{self.x}"],
+                xmax=len(self.df) + self.pad,
                 color=color,
                 alpha=self.con_alpha,
                 zorder=3,
@@ -341,8 +344,8 @@ class BiseparationPlot:
                 else self.fgcolors[1]
             )
             self.ax.vlines(
-                x=value[self.x],
-                ymin=value[self.y],
+                x=value[f"order_{self.x}"],
+                ymin=value[f"order_{self.y}"],
                 ymax=0 - self.pad,
                 color=color,
                 alpha=self.con_alpha,
@@ -352,7 +355,7 @@ class BiseparationPlot:
         return self
 
     def annotate(self, model, refloc, margin, axis):
-        """Annotate the highlights.
+        """Annotate the highlights for one axis.
 
         Parameters
         ----------
@@ -362,7 +365,9 @@ class BiseparationPlot:
         axis: Axis the model is on: "x" or "y".
         """
         step = 0
-        start_loc = self.df.loc[self.df[f"neg_{model}"] == 1, model].min()
+        start_loc = self.df.loc[
+            self.df[f"neg_{model}"] == 1, f"order_{model}"
+        ].min()
         if axis == "x":
             trans = self.ax.get_xaxis_transform()
             rotation = -90
@@ -379,9 +384,9 @@ class BiseparationPlot:
         ):
             self.ax.annotate(
                 value[self.lab],
-                xy=(value[model], refloc)
+                xy=(value[f"order_{model}"], refloc)
                 if axis == "x"
-                else (refloc, value[model]),
+                else (refloc, value[f"order_{model}"]),
                 xycoords="data",
                 xytext=(start_loc + step, margin)
                 if axis == "x"
@@ -396,13 +401,16 @@ class BiseparationPlot:
             # Little trick here to actually attach to the left center point.
             self.ax.annotate(
                 "",
-                xy=(value[model], refloc)
+                xy=(value[f"order_{model}"], refloc)
                 if axis == "x"
-                else (refloc, value[model]),
+                else (refloc, value[f"order_{model}"]),
                 xycoords="data",
-                xytext=(start_loc + step, margin)
+                xytext=(
+                    start_loc + step,
+                    margin + 0.01,
+                )  # Slight distance to text.
                 if axis == "x"
-                else (margin, start_loc + step),
+                else (margin - 0.01, start_loc + step),
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
@@ -421,9 +429,9 @@ class BiseparationPlot:
         ):
             self.ax.annotate(
                 value[self.lab],
-                xy=(value[model], refloc)
+                xy=(value[f"order_{model}"], refloc)
                 if axis == "x"
-                else (refloc, value[model]),
+                else (refloc, value[f"order_{model}"]),
                 xycoords="data",
                 xytext=(start_loc + step, margin)
                 if axis == "x"
@@ -438,13 +446,13 @@ class BiseparationPlot:
             # Little trick here to actually attach to the left center point.
             self.ax.annotate(
                 "",
-                xy=(value[model], refloc)
+                xy=(value[f"order_{model}"], refloc)
                 if axis == "x"
-                else (refloc, value[model]),
+                else (refloc, value[f"order_{model}"]),
                 xycoords="data",
-                xytext=(start_loc + step, margin)
+                xytext=(start_loc + step, margin + 0.01)
                 if axis == "x"
-                else (margin, start_loc + step),
+                else (margin - 0.01, start_loc + step),
                 textcoords=trans,
                 arrowprops=dict(
                     arrowstyle="-",
