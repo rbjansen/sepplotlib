@@ -276,8 +276,6 @@ class BiseparationPlot:
                 lw=3,
                 zorder=zorder,
             )
-        self.rax_y.set_xticks([])
-        self.rax_y.set_yticks([])
         self.rax_y.margins(0.02)
         self.rax_y.axis("off")
         # And the x-rug.
@@ -303,8 +301,6 @@ class BiseparationPlot:
                 lw=3,
                 zorder=zorder,
             )
-        self.rax_x.set_xticks([])
-        self.rax_x.set_yticks([])
         self.rax_x.margins(0.02)
         self.rax_x.axis("off")
         # Set some space for the rugs.
