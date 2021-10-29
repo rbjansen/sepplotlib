@@ -19,24 +19,28 @@ All functions expect a pandas DataFrame, and strings for the relevant columns. T
 
 ```python
 SeparationPlot(
-	df=df, 
-	y_true="y_true", 
-	y_pred="y_pred", 
+	df=df,
+	y_true="y_true",
+	y_pred="y_pred",
 	title="Example"
 )
 ```
+
+<img src="https://user-images.githubusercontent.com/31345940/139453276-2caf6b1c-087f-40a9-baa2-2c3fc8f79ab2.png" width="500">
 
 Similarly to generate a model criticism plot:
 
 ```python
 ModelCriticismPlot(
-	df=df, 
-	y_true="y_true", 
-	y_pred="y_pred", 
-	lab="lab", 
+	df=df,
+	y_true="y_true",
+	y_pred="y_pred",
+	lab="lab",
 	title="Example"
 )
 ```
+
+<img src="https://user-images.githubusercontent.com/31345940/139453840-e9469065-8a67-42d7-81fc-61dac823df32.png" width="400">
 
 And finally, to generate a two-dimensional, bi-separation plot:
 
@@ -50,3 +54,5 @@ BiseparationPlot(
     title="Example",
 )
 ```
+
+<img src="https://user-images.githubusercontent.com/31345940/139453518-83a4ad72-ffba-442c-816c-35902fcaf5b1.png" width="400">
