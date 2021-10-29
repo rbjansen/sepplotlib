@@ -11,23 +11,42 @@ The bi-separation plot and model criticism plot are adapted from code originally
 `pip install sepplotlib` to install.
 
 
-
 ## Example usage
 
-To generate a one-dimensional separation plot:
+Please see the accompanied notebook for an example using mock data.
+
+All functions expect a pandas DataFrame, and strings for the relevant columns. To generate a one-dimensional separation plot for instance, simply run:
 
 ```python
-
+SeparationPlot(
+	df=df, 
+	y_true="y_true", 
+	y_pred="y_pred", 
+	title="Example"
+)
 ```
 
-To generate a model criticism plot:
+Similarly to generate a model criticism plot:
 
 ```python
-
+ModelCriticismPlot(
+	df=df, 
+	y_true="y_true", 
+	y_pred="y_pred", 
+	lab="lab", 
+	title="Example"
+)
 ```
 
-To generate a two-dimensional, bi-separation plot:
+And finally, to generate a two-dimensional, bi-separation plot:
 
 ```python
-
+BiseparationPlot(
+    df=df,
+    x="y_pred_a",
+    y="y_pred_b",
+    obs="y_true",
+    lab="lab",
+    title="Example",
+)
 ```
