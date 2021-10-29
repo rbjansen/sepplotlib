@@ -56,7 +56,7 @@ class ModelCriticismPlot:
         markersize: int = 100,
         markeralpha: float = 1,
         labelsize: int = 18,
-        annotsize: int = 12,
+        annotsize: int = 14,
         annotspacing: float = 0.05,
         ticksize: int = 16,
         pad: float = 0.1,
