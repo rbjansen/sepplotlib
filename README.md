@@ -15,14 +15,14 @@ The bi-separation plot and model criticism plot are adapted from code originally
 
 Please see the accompanied notebook for an example using mock data.
 
-All functions expect a pandas DataFrame, and strings for the relevant columns. To generate a one-dimensional separation plot for instance, simply run:
+The figures are objects that expect a pandas DataFrame and strings for the relevant columns. To generate a one-dimensional separation plot for instance, simply run:
 
 ```python
 SeparationPlot(
-	df=df,
-	y_true="y_true",
-	y_pred="y_pred",
-	title="Example"
+    df=df,
+    y_true="y_true",
+    y_pred="y_pred",
+    title="Example"
 )
 ```
 
@@ -32,11 +32,11 @@ Similarly to generate a model criticism plot:
 
 ```python
 ModelCriticismPlot(
-	df=df,
-	y_true="y_true",
-	y_pred="y_pred",
-	lab="lab",
-	title="Example"
+    df=df,
+    y_true="y_true",
+    y_pred="y_pred",
+    lab="lab",
+    title="Example"
 )
 ```
 
