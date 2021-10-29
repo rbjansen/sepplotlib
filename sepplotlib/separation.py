@@ -17,8 +17,11 @@ class SeparationPlot:
     figsize: Tuple of figsize by width and height in inches.
     colors: Tuple of string colors for the negative and positive. Example:
         ("blue": "#E34A33").
+    axis_off: Bool turning axis ticks and ticklabels off.
     path: String representation of path to write figure to. Default is set to
         None: saving is optional.
+    dpi: Optional integer value for dots per inch. Increase for higher output
+        quality.
     """
 
     def __init__(
@@ -29,6 +32,7 @@ class SeparationPlot:
         title: str = "",
         figsize: Tuple[float, float] = (9, 1.5),
         colors: Tuple[str, str] = ("#FEF0D9", "#E34A33"),
+        axis_off: bool = False,
         path: Optional[str] = None,
         dpi: Optional[int] = 200,
     ):
@@ -37,6 +41,7 @@ class SeparationPlot:
         self.title = title
         self.figsize = figsize
         self.colors = colors
+        self.axis_off = axis_off
         # Make figure.
         self.fig, self.ax = plt.subplots(figsize=self.figsize)
         SeparationPlot.set_frame(self).plot()
@@ -58,6 +63,8 @@ class SeparationPlot:
         # Tighten layout.
         plt.xlim(0, len(self.y_pred))
         plt.tight_layout()
+        if self.axis_off:
+            self.ax.axis("off")
         return self
 
     def plot(self):
