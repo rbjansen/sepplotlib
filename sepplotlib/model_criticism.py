@@ -140,13 +140,17 @@ class ModelCriticismPlot:
 
     def prepare_data(self):
         """Prepare sorted data arrays."""
-        df = self.df[[y_true, y_pred, lab]].sort_values(by=y_pred)
-        df["bgcolor"] = np.where(df[y_true] == 1, bgcolors[1], bgcolors[0])
+        df = self.df[[self.y_true, self.y_pred, self.lab]].sort_values(
+            by=self.y_pred
+        )
+        df["bgcolor"] = np.where(
+            df[self.y_true] == 1, bgcolors[1], bgcolors[0]
+        )
         df = df.reset_index(drop=True)
         # Find highlights.
-        worst_fp = df.loc[df[y_true] == 0][-self.n_worst :].index
+        worst_fp = df.loc[df[self.y_true] == 0][-self.n_worst :].index
         df["worst_fp"] = np.where(df.index.isin(worst_fp), 1, 0)
-        worst_fn = df.loc[df[y_true] == 1][: self.n_worst].index
+        worst_fn = df.loc[df[self.y_true] == 1][: self.n_worst].index
         df["worst_fn"] = np.where(df.index.isin(worst_fn), 1, 0)
         # Conditional coloring.
         df["fgcolor"] = df["bgcolor"]  # Except when...
@@ -172,8 +176,8 @@ class ModelCriticismPlot:
         sns.kdeplot(
             ax=self.axs[1],
             data=self.df,
-            x=y_pred,
-            hue=y_true,
+            x=self.y_pred,
+            hue=self.y_true,
             fill=True,
             palette=self.fgcolors,
             legend=False,
@@ -233,7 +237,7 @@ class ModelCriticismPlot:
         trans = self.axs[0].get_xaxis_transform()
         va, ha = ("center", "left")
         # Sort df descending since annotations hang.
-        self.df = self.df.sort_values(by=y_pred, ascending=False)
+        self.df = self.df.sort_values(by=self.y_pred, ascending=False)
         # Annotate the negatives first.
         for idx, row in self.df.loc[self.df.worst_fp == 1].iterrows():
             self.axs[0].annotate(
