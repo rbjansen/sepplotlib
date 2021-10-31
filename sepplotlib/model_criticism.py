@@ -144,7 +144,7 @@ class ModelCriticismPlot:
             by=self.y_pred
         )
         df["bgcolor"] = np.where(
-            df[self.y_true] == 1, bgcolors[1], bgcolors[0]
+            df[self.y_true] == 1, self.bgcolors[1], self.bgcolors[0]
         )
         df = df.reset_index(drop=True)
         # Find highlights.
@@ -154,8 +154,8 @@ class ModelCriticismPlot:
         df["worst_fn"] = np.where(df.index.isin(worst_fn), 1, 0)
         # Conditional coloring.
         df["fgcolor"] = df["bgcolor"]  # Except when...
-        df.loc[df.worst_fp == 1, "fgcolor"] = fgcolors[0]
-        df.loc[df.worst_fn == 1, "fgcolor"] = fgcolors[1]
+        df.loc[df.worst_fp == 1, "fgcolor"] = self.fgcolors[0]
+        df.loc[df.worst_fn == 1, "fgcolor"] = self.fgcolors[1]
         self.df = df
         return self
 
