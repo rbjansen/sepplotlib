@@ -60,4 +60,4 @@ spl.BiseparationPlot(
 
 <img src="https://user-images.githubusercontent.com/31345940/139453518-83a4ad72-ffba-442c-816c-35902fcaf5b1.png" width="400">
 
-Please run `help` on any of these classes to learn what can be customized (e.g. `help(spl.SeparationPlot))`).
+Please run `help` on any of these classes to learn what can be customized (e.g. `help(spl.SeparationPlot)`).
