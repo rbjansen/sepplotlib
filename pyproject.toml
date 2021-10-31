@@ -1,10 +1,12 @@
 [tool.poetry]
 name = "sepplotlib"
-version = "1.0.0"
+version = "1.0.1"
 description = "Separation plots for binary classification problems"
 authors = ["Remco Bastiaan Jansen <r.b.jansen.uu@gmail.com>"]
 keywords = ["separation", "classification", "visualization", "prediction"]
 readme = "README.md"
+homepage = "https://github.com/rbjansen/sepplotlib"
+repository = "https://github.com/rbjansen/sepplotlib"
 license = "MIT"
 include = [
     "LICENSE",
